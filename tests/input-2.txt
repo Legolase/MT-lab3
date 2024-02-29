@@ -1,0 +1,15 @@
+smart_array *smart_array_ctor(size_t capacity)
+{
+	smart_array *sm = malloc(sizeof(smart_array));
+	sm->begin_ = malloc(capacity);
+	if (!(sm->begin_))
+	{
+		process_stage = ERROR_NOT_ENOUGH_MEMORY;
+		fprintf(stderr, "can't alloc %lu bytes", capacity);
+		free(sm);
+		return NULL;
+	}
+	sm->size_ = 0;
+	sm->capacity_ = capacity;
+	return sm;
+}

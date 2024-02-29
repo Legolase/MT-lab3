@@ -1,0 +1,80 @@
+chunk *read_chunk(FILE *f)
+{
+  if (!f)
+  {
+    process_stage = ERROR_FILE_NOT_FOUND;
+    fprintf(stderr, "file for reading chunk not defined\n");
+    return NULL;
+  }
+
+  if (feof(f))
+  {
+    process_stage = ERROR_INVALID_DATA;
+    fprintf(stderr, "file source run out for reading chunk\n");
+    return NULL;
+  }
+
+  chunk *new_chunk = chunk_ctor();
+
+  if (!new_chunk)
+  {
+    process_stage = ERROR_OUTOFMEMORY;
+    fprintf(stderr, "not enough memory to alloc chunk\n");
+    return NULL;
+  }
+
+  read_byte(f, &(new_chunk->length), 4);
+  if (process_stage)
+  {
+    chunk_dtor(&new_chunk);
+    fprintf(stderr, "Can't read length of chunk\n");
+    return NULL;
+  }
+  change_endian(&(new_chunk->length));
+
+
+  if (new_chunk->length > 0)
+  {
+    new_chunk->data = malloc(new_chunk->length);
+
+    if (!new_chunk->data)
+    {
+      process_stage = ERROR_NOT_ENOUGH_MEMORY;
+      chunk_dtor(&new_chunk);
+      fprintf(stderr, "Can't alloc data for chunk\n");
+      return NULL;
+    }
+  }
+
+
+  read_byte(f, &(new_chunk->type), 4);
+  if (process_stage)
+  {
+    chunk_dtor(&new_chunk);
+    fprintf(stderr, "Can't read type of chunk\n");
+    return NULL;
+  }
+  change_endian(&(new_chunk->type));
+
+  if (new_chunk->length > 0)
+  {
+    read_byte(f, new_chunk->data, new_chunk->length);
+    if (process_stage)
+    {
+      chunk_dtor(&new_chunk);
+      fprintf(stderr, "Can't read data of chunk\n");
+      return NULL;
+    }
+  }
+
+  read_byte(f, &(new_chunk->crc), 4);
+  if (process_stage)
+  {
+    chunk_dtor(&new_chunk);
+    fprintf(stderr, "Can't read CRC-32 of chunk\n");
+    return NULL;
+  }
+  change_endian(&(new_chunk->crc));
+
+  return new_chunk;
+}

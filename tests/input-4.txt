@@ -1,0 +1,17 @@
+void smart_array_add(smart_array *sm, size_t const count, uchar *from)
+{
+  if (count == 0)
+  {
+    return;
+  }
+  size_t const need_size = sm->size_ + count;
+  if ((need_size < sm->size_) || (need_size < count))
+  {
+    process_stage = ERROR_UNKNOWN;
+    fprintf(stderr, "overflow of add operation smart_array\n");
+    return;
+  }
+  ensure_capacity(sm, need_size);
+  memcpy(sm->begin_ + sm->size_, from, count);
+  sm->size_ = need_size;
+}

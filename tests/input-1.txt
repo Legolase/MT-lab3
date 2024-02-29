@@ -1,0 +1,6 @@
+int pow(int a, int n) {int r = 1;          for (;n > 1;            ++i) {  if (n % 2 != 0) {r *= a;
+}
+
+a *= a;          n /= 2;
+} return a * r;
+}

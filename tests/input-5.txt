@@ -1,0 +1,6 @@
+typedef struct {
+  uint length;
+  uint type;
+  uint crc;
+  uchar *data;
+} chunk;

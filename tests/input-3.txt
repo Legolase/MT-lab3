@@ -1,0 +1,28 @@
+void ensure_capacity(smart_array *sm, size_t count) {
+  size_t tmp_capacity = sm->capacity_;
+  while (tmp_capacity < count)
+  {
+    tmp_capacity *= 2;
+  }
+  if (tmp_capacity > sm->capacity_)
+  {
+    uchar *tmp_begin = realloc(sm->begin_, tmp_capacity);
+    if (!tmp_begin)
+    {
+      tmp_begin = realloc(sm->begin_, count);
+      if (!tmp_begin)
+      {
+        process_stage = ERROR_MEMORY;
+        fprintf(stderr, "not enough memory to allocate data for smart_array\n");
+        return;
+      }
+      else
+        sm->capacity_ = count;
+    }
+    else
+    {
+      sm->capacity_ = tmp_capacity;
+    }
+    sm->begin_ = tmp_begin;
+  }
+}
